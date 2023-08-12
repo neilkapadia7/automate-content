@@ -1,12 +1,15 @@
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
-const ffmpegPath = require('ffmpeg-static').path;
 
+// Set up canvas dimensions
+const canvasWidth = 800;
+const canvasHeight = 600;
 
+// Load a font
+registerFont(path.join(`${__dirname}/fonts`, 'Roboto-Medium.ttf'), { family: 'Roboto' });
 
-
-// Function to generate a random motivational quote
+// Function to generate a random quote
 function generateQuote() {
     const quotes = [
         "Believe you can and you're halfway there.",
@@ -19,66 +22,61 @@ function generateQuote() {
     return quotes[randomIndex];
 }
 
-// Function to save a quote to a text file
-function saveQuoteToFile(quote) {
-    const filePath = path.join(`${__dirname}/static`, 'quotes.txt');
-    fs.appendFile(filePath, quote + '\n', (err) => {
-        if (err) {
-            console.error('Error saving quote:', err);
+// Function to create an image with a quote
+async function createImageWithQuote() {
+    const canvas = createCanvas(canvasWidth, canvasHeight);
+    const ctx = canvas.getContext('2d');
+
+    // Set background color
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Load an image (optional)
+    const backgroundImage = await loadImage(path.join(`${__dirname}/static/images`, 'whiteImage.png'));
+    ctx.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
+
+    // Set text properties
+    ctx.fillStyle = '#000000';
+    ctx.font = '30px "Your Font Name"';
+    ctx.textAlign = 'center';
+
+    // Generate a random quote
+    const quote = generateQuote();
+
+    // Position the quote on the canvas
+    const x = canvasWidth / 2;
+    const y = canvasHeight / 2;
+
+    // Wrap text
+    const maxLineWidth = 600;
+    const lineHeight = 40;
+    const words = quote.split(' ');
+    let line = '';
+    const lines = [];
+
+    for (const word of words) {
+        const testLine = line + (line ? ' ' : '') + word;
+        const testWidth = ctx.measureText(testLine).width;
+        if (testWidth > maxLineWidth) {
+            lines.push(line);
+            line = word;
         } else {
-            console.log('Quote saved:', quote);
+            line = testLine;
         }
-    });
-}
+    }
+    lines.push(line);
 
-// Generate a quote and save it to a file
-const quote = generateQuote();
-saveQuoteToFile(quote);
-
-
-// Directory where the images are stored
-const imagesDirectory = path.join(`${__dirname}/static/`, 'images');
-
-// Function to generate a video from images
-function generateVideo() {
-    const outputVideoPath = path.join(`${__dirname}/static/`, 'output.mp4');
-    
-    // List all image files in the images directory
-    const imageFiles = fs.readdirSync(imagesDirectory)
-        .filter(file => file.endsWith('.jpg') || file.endsWith('.png'));
-
-    if (imageFiles.length === 0) {
-        console.error('No image files found in the directory.');
-        return;
+    // Draw the wrapped lines of text
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], x, y - (lines.length / 2 - i) * lineHeight);
     }
 
-    // Construct an array of arguments for ffmpeg
-    const ffmpegArgs = [
-        '-framerate', '1', // Set the framerate (1 image per second)
-        '-i', path.join(imagesDirectory, '%d.jpg'), // Input pattern
-        '-c:v', 'libx264', // Video codec
-        '-r', '30', // Output framerate
-        outputVideoPath // Output file path
-    ];
-
-    // Spawn the ffmpeg process
-    const ffmpegProcess = spawn(ffmpegPath, ffmpegArgs);
-
-    ffmpegProcess.stdout.on('data', (data) => {
-        console.log(data.toString());
-    });
-
-    ffmpegProcess.stderr.on('data', (data) => {
-        console.error(data.toString());
-    });
-
-    ffmpegProcess.on('close', (code) => {
-        if (code === 0) {
-            console.log('Video creation completed successfully.');
-        } else {
-            console.error(`Video creation process exited with code ${code}.`);
-        }
-    });
+    // Save the image to a file
+    const outputFilePath = path.join(__dirname, 'output.png');
+    const stream = canvas.createPNGStream();
+    stream.pipe(fs.createWriteStream(outputFilePath));
+    console.log('Image with quote saved:', outputFilePath);
 }
 
-// generateVideo();
+// Create an image with a quote
+createImageWithQuote();
