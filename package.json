@@ -1,0 +1,20 @@
+{
+  "name": "automate-content",
+  "version": "1.0.0",
+  "description": "Create a Nodejs Bot to Create and Automate creation of content for social media ",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start"
+  },
+  "author": "Neil Kapadia",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "ffmpeg-static": "^5.1.0",
+    "moment": "^2.29.4"
+  }
+}
