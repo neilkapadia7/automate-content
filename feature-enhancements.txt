@@ -1,0 +1,6 @@
+1. Connect to DB
+2. Store Quote in DB
+3. Store Image and path
+4. Select a Layout and background 
+5. Write a Package to get all quotes
+6. Publish Created Image to Instagram

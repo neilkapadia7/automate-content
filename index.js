@@ -72,7 +72,7 @@ async function createImageWithQuote() {
     }
 
     // Save the image to a file
-    const outputFilePath = path.join(__dirname, 'output.png');
+    const outputFilePath = path.join(__dirname, 'output1.png');
     const stream = canvas.createPNGStream();
     stream.pipe(fs.createWriteStream(outputFilePath));
     console.log('Image with quote saved:', outputFilePath);
