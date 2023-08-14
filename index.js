@@ -4,10 +4,10 @@ const path = require('path');
 
 // Set up canvas dimensions
 const canvasWidth = 800;
-const canvasHeight = 600;
+const canvasHeight = 700;
 
 // Load a font
-registerFont(path.join(`${__dirname}/fonts`, 'Roboto-Medium.ttf'), { family: 'Roboto' });
+registerFont(path.join(`${__dirname}/fonts`, 'BebasNeue-Regular.ttf'), { family: 'Bebas Neue' });
 
 // Function to generate a random quote
 function generateQuote() {
@@ -26,18 +26,19 @@ function generateQuote() {
 async function createImageWithQuote() {
     const canvas = createCanvas(canvasWidth, canvasHeight);
     const ctx = canvas.getContext('2d');
+    console.log('ctx', ctx)
 
     // Set background color
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Load an image (optional)
-    const backgroundImage = await loadImage(path.join(`${__dirname}/static/images`, 'whiteImage.png'));
+    const backgroundImage = await loadImage(path.join(`${__dirname}/static/images`, 'A_black_image.jpeg'));
     ctx.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
 
     // Set text properties
-    ctx.fillStyle = '#000000';
-    ctx.font = '30px "Your Font Name"';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '50px "Bebas Neue"';
     ctx.textAlign = 'center';
 
     // Generate a random quote
@@ -80,3 +81,4 @@ async function createImageWithQuote() {
 
 // Create an image with a quote
 createImageWithQuote();
+console.log('Server Started')
