@@ -1,6 +1,7 @@
 const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs');
 const path = require('path');
+const Quote = require('inspirational-quotes');
 
 // Set up canvas dimensions
 const canvasWidth = 800;
@@ -10,16 +11,24 @@ const canvasHeight = 700;
 registerFont(path.join(`${__dirname}/fonts`, 'BebasNeue-Regular.ttf'), { family: 'Bebas Neue' });
 
 // Function to generate a random quote
-function generateQuote() {
-    const quotes = [
-        "Believe you can and you're halfway there.",
-        "The only way to do great work is to love what you do.",
-        "Don't watch the clock; do what it does. Keep going.",
-        // Add more quotes here
-    ];
+function generateQuote(isRandom) {
+    // const quotes = [
+    //     "Believe you can and you're halfway there.",
+    //     "The only way to do great work is to love what you do.",
+    //     "Don't watch the clock; do what it does. Keep going.",
+    //     // Add more quotes here
+    // ];
 
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    return quotes[randomIndex];
+    // const randomIndex = Math.floor(Math.random() * quotes.length);
+    // return quotes[randomIndex];
+    let quote;
+    let getQuote = Quote.getQuote();
+    quote = getQuote.text;
+
+    if(isRandom || !quote)
+        quote = Quote.getRandomQuote()
+
+    return quote;
 }
 
 // Function to create an image with a quote
@@ -33,7 +42,7 @@ async function createImageWithQuote() {
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Load an image (optional)
-    const backgroundImage = await loadImage(path.join(`${__dirname}/static/images`, 'A_black_image.jpeg'));
+    const backgroundImage = await loadImage(path.join(`${__dirname}/static/images`, 'Alpha Motivation.png'));
     ctx.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
 
     // Set text properties
@@ -73,7 +82,7 @@ async function createImageWithQuote() {
     }
 
     // Save the image to a file
-    const outputFilePath = path.join(__dirname, 'output1.png');
+    const outputFilePath = path.join(__dirname + '/generatedFiles', `output-${Date.now().toString()}.png`);
     const stream = canvas.createPNGStream();
     stream.pipe(fs.createWriteStream(outputFilePath));
     console.log('Image with quote saved:', outputFilePath);
